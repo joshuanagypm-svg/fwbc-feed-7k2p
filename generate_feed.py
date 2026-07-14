@@ -30,7 +30,7 @@ SIZE_CACHE_FILE = "sizes.json"   # caches MP3 byte sizes so we don't re-HEAD eve
 
 # Set to a number to cap how many episodes appear in the feed (newest first),
 # or None to include everything. Most podcast apps are happy with 200-ish.
-MAX_ITEMS = 300
+MAX_ITEMS = None
 
 # Whether to fetch each NEW mp3's byte size via a HEAD request (for accurate
 # <enclosure length>). Cached after the first time. Safe to leave True.
