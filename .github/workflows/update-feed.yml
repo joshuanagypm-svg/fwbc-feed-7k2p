@@ -1,14 +1,10 @@
-name: Update podcast feed
+name: Build podcast feed
 
-# When this runs:
-#  - on a schedule (twice a day by default)
-#  - whenever you push a change to the repo
-#  - manually, from the Actions tab (workflow_dispatch)
+# Runs when you upload a new saved page (any .html), or manually from the Actions tab.
 on:
-  schedule:
-    - cron: "0 8,20 * * *"   # 08:00 and 20:00 UTC daily
   push:
     branches: [ main ]
+    paths: [ "*.html", "*.htm" ]
   workflow_dispatch:
 
 permissions:
@@ -18,28 +14,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Generate feed
-        run: python generate_feed.py
-
+      - run: pip install -r requirements.txt
+      - run: python build_feed.py
       - name: Commit updated feed
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add feed.xml sizes.json
+          git add feed.xml
           if git diff --staged --quiet; then
-            echo "No changes to commit."
+            echo "No changes to feed."
           else
-            git commit -m "Update feed ($(date -u +%Y-%m-%d))"
+            git commit -m "Rebuild feed from saved page"
             git push
           fi
